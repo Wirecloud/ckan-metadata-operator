@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<operator xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="ckan-metadata" version="0.1.0">
+
+    <details>
+        <title>CKAN metadata operator</title>
+        <homepage>https://github.com/Wirecloud/ckan-metadata-operator</homepage>
+        <authors>Miguel Jiménez &lt;mjimenez@conwet.com&gt;</authors>
+        <email>mjimenez@conwet.com</email>
+        <image></image>
+        <smartphoneimage></smartphoneimage>
+        <description>WireCloud operator that receives, from URL, CKAN resource IDs and gets metadata for initiating a guided dashboard-creation process.</description>
+        <longdescription>DESCRIPTION.md</longdescription>
+        <changelog>doc/changelog.md</changelog>
+        <doc>doc/userguide.md</doc>
+        <license>MIT</license>
+        <issuetracker>https://github.com/Wirecloud/ckan-metadata-operator/issues</issuetracker>
+    </details>
+
+    <requirements>
+        <!-- Add any extra requirements here -->
+        <!-- <feature name="${feature-name}" /> -->
+    </requirements>
+
+    <preferences>
+    </preferences>
+
+    <wiring>
+        <outputendpoint name="ckansource" type="text" label="CKAN source" description="CKAN source operator configuration parameters" friendcode="ckan-source-params" />
+        <outputendpoint name="ngsimetadata" type="text" label="NGSI metadata" description="Metadata of the NGSI dataset as obtained from CKAN API" friendcode="ngsi-metadata" />
+    </wiring>
+
+    <scripts>
+        <script src="js/main.js"/>
+    </scripts>
+
+</operator>
