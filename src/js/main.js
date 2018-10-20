@@ -21,10 +21,18 @@
         this.ckanserver = getURLParameter('ckanserver', mashupUrl);
         this.resourceid = getURLParameter('resourceid', mashupUrl);
         this.ckantoken = getURLParameter('ckantoken', mashupUrl);
+
+        MashupPlatform.operator.log(
+            "CKAN server: " + this.ckanserver, MashupPlatform.log.INFO);
+        MashupPlatform.operator.log(
+            "Resource ID: " + this.resourceid, MashupPlatform.log.INFO);
+        MashupPlatform.operator.log(
+            "CKAN token: " + this.ckantoken, MashupPlatform.log.INFO);
+
         getCkanMetadata(this.ckanserver, this.resourceid, this.ckantoken).then(
             processCkanMetadata,
             function (reason) {
-                MashupPlatform.widget.log(
+                MashupPlatform.operator.log(
                     "Could not get CKAN metadata. " + reason,
                     MashupPlatform.log.ERROR);
             });
@@ -56,11 +64,12 @@
 
     var getCkanMetadata = function getCkanMetadata(ckanserver, resourceid, ckantoken) {
         return new Promise(function (resolve, reject) {
-            MashupPlatform.http.makeRequest(new URL('api/action/resource_show', ckanserver), {
+            MashupPlatform.http.makeRequest(new URL('api/action/resource_show?id=' + resourceid, ckanserver), {
                 method: "GET",
                 supportsAccessControl: true,
                 requestHeaders: getAuthHeader(ckantoken),
-                onSucess: function (response) {
+                forceProxy: true,
+                onSuccess: function (response) {
                     resolve(JSON.parse(response.responseText));
                 },
                 onFailure: function (response) {
@@ -97,18 +106,26 @@
                 }
             } else if (MashupPlatform.operator.outputs.ngsimetadata.connected) {
                 // Process NGSI entities and proceed with NGSI dashboard creation
-                var url = document.createElement('a');
+                var url = new URL(response.result.url);
                 if (url.pathname.startsWith('/v2')) { // V1 of NGSI API is not supported (POST params)
-                    url.href = response.result.url;
-                    var metadata = { // TODO Support ../entities/{id}/attrs/{attr_name}[/value] syntax
-                        types: getURLParameter('type', url).split(','),
-                        filteredAttributes: getURLParameter('attrs', url).split(','),
-                        values: getURLParameter('options', url).split(',').includes('values'),
-                        serverURL: url.protocol + '//' + url.host
-                    };
+                    var metadata = {};
+                    var types_par = getURLParameter('type', url);
+                    var attrs_par = getURLParameter('attrs', url);
+                    var options_par = getURLParameter('options', url);
+                    metadata.types = types_par ? types_par.split(',') : null;
+                    metadata.filteredAttributes = attrs_par ? attrs_par.split(',') : null;
+                    metadata.filteredAttributes.concat(response.result.attrs_str);
+                    // metadata.entity = response.result.entity; // For future support of fiware-ngsi-registry
+                    metadata.auth_type = response.result.auth_type;
+                    metadata.idPattern = getURLParameter('idPattern', url);
+                    metadata.query = getURLParameter('q', url);
+                    metadata.values = options_par ? options_par.split(',').includes('values') : false;
+                    metadata.serverURL = url.protocol + '//' + url.host;
+                    metadata.servicePath = response.result.service_path;
+                    metadata.tenant = response.result.tenant;
                     MashupPlatform.wiring.pushEvent('ngsimetadata', metadata);
                 } else {
-                    MashupPlatform.widget.log(
+                    MashupPlatform.operator.log(
                         "Only NGSI version 2 is supported", MashupPlatform.log.ERROR);
                 }
             }
