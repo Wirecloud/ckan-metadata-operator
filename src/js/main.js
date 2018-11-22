@@ -112,8 +112,8 @@
                     var types_par = getURLParameter('type', url);
                     var attrs_par = getURLParameter('attrs', url);
                     var options_par = getURLParameter('options', url);
-                    metadata.types = types_par ? types_par.split(',') : null;
-                    metadata.filteredAttributes = attrs_par ? attrs_par.split(',') : null;
+                    metadata.types = types_par ? types_par.split(',') : [];
+                    metadata.filteredAttributes = attrs_par ? attrs_par.split(',') : [];
                     metadata.filteredAttributes.concat(response.result.attrs_str);
                     // metadata.entity = response.result.entity; // For future support of fiware-ngsi-registry
                     metadata.auth_type = response.result.auth_type;
