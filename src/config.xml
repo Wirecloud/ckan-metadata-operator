@@ -22,6 +22,12 @@
     </requirements>
 
     <preferences>
+        <preference
+            name="ngsi_proxy"
+            type="text"
+            label="NGSI proxy URL"
+            description="URL of the Orion Context Broker proxy to use for configuring NGSI-source-operators so them can receive asynchronous notifications about changes"
+            default="https://ngsiproxy.lab.fiware.org" />
     </preferences>
 
     <wiring>

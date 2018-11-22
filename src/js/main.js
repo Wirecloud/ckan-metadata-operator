@@ -121,6 +121,7 @@
                     metadata.query = getURLParameter('q', url);
                     metadata.values = options_par ? options_par.split(',').includes('values') : false;
                     metadata.serverURL = url.protocol + '//' + url.host;
+                    metadata.proxyURL = MashupPlatform.prefs.get('ngsi_proxy');
                     metadata.servicePath = response.result.service_path;
                     metadata.tenant = response.result.tenant;
                     MashupPlatform.wiring.pushEvent('ngsimetadata', metadata);
